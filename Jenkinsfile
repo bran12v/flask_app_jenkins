@@ -41,6 +41,7 @@ pipeline {
   stage('Kubernetes') {
     steps {
       withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+        sh "kubectl config use-context arn:aws:eks:us-east-1:797918408294:cluster/skillstorm"
         sh "aws eks update-kubeconfig --region us-east-1 --name ${cluster_name}"
         script{
           try{
