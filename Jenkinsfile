@@ -1,4 +1,11 @@
 pipeline {
+
+  environment {
+    registry = 'bran12v/jenkins_example'
+    registryCredentials = 'docker'
+    cluster_name = 'skillstorm'
+  }
+
   agent {
     node {
       label 'docker'
@@ -12,21 +19,21 @@ pipeline {
       }
     }
 
-    stage('Build') {
+    stage('Build Stage') {
       steps {
-        sh 'docker build -t bran12v/jenkins_example .'
+        script {
+          dockerImage = docker.build(registry)
+        }
       }
     }
 
-    stage('Docker Login') {
+    stage('Deployment Stage') {
       steps {
-        sh 'docker login -u bran12v -p dckr_pat_F3k60vxZai73R-P2OElFPd2kcXY'
-      }
-    }
-
-    stage('Push') {
-      steps {
-        sh 'docker push bran12v/jenkins_example'
+        script {
+          docker.withRegistry('', registryCredentials) {
+            dockerImage.push()
+          }
+        }
       }
     }
 
